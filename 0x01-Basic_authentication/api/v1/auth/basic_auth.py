@@ -54,16 +54,17 @@ class BasicAuth(Auth):
     def user_object_from_credentials(self, user_email: str,
                                      user_pwd: str) -> TypeVar('User'):
         """returns the User instance based on his email and password"""
-        if user_email is not None or type(user_email) != str or \
-                user_pwd is None or type(user_pwd) != str:
-            return None
+        if type(user_email) == str and type(user_pwd) == str:
 
-        try:
-            for user in User.search({'email': user_email}):
-                if user.is_valid_password(user_pwd):
-                    return user
-        except Exception:
-            return None
+            try:
+                users = User.search({'email': user_email})
+            except Exception:
+                return None
+            if len(users) <= 0:
+                return None
+            if users[0].is_valid_password(user_pwd):
+                return users[0]
+        return None
 
     def current_user(self, request=None) -> TypeVar('User'):
         """overloads Auth and retrieves the User instance for a request"""
