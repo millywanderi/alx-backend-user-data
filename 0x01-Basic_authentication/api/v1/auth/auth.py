@@ -10,8 +10,8 @@ class Auth:
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """Returns false if the path is in included paths"""
-        if path is not None or excluded_paths is not None:
-            if path[-1] != "/":
+        if path is not None:
+            if not path.endswith("/"):
                 path = path + "/"
 
             if path in excluded_paths:
