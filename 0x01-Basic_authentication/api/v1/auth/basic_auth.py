@@ -44,12 +44,17 @@ class BasicAuth(Auth):
         Base64 decoded value
         """
         decoded_base = decoded_base64_authorization_header
-        if decoded_base is not None and type(decoded_base) == str:
-            if ':' in decoded_base:
-                email = re.match('(.+):', decoded_base)[1]
-                password = re.match('.+:(.+)', decoded_base)[1]
-                return (email, password)
-        return(None, None)
+        if type(decoded_base) == str:
+            pattern = r'(?P<user>[^:]+):(?P<password>.+)'
+            field_match = re.fullmatch(
+                pattern,
+                decoded_base.strip()
+            )
+            if field_match is not None:
+                user = field_match.group('user')
+                password = field_match.group('password')
+                return user, password
+        return None, None
 
     def user_object_from_credentials(self, user_email: str,
                                      user_pwd: str) -> TypeVar('User'):
