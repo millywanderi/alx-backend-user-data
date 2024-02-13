@@ -49,7 +49,7 @@ def setup():
         is_authenticated = auth.require_auth(request.path, exclude_paths)
 
         if is_authenticated:
-            if auth.authorized_header(request) is None:
+            if auth.authorization_header(request) is None:
                 abort(401)
 
             if auth.current_user(request) is None:
