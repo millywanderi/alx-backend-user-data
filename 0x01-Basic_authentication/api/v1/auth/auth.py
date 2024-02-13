@@ -10,12 +10,12 @@ class Auth:
     
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """Returns false if the path is in included paths"""
-        if path is not None and excluded_paths is not None:
-            if path[-1] != "/":
-                path = path + "/"
-            if path in excluded_paths:
-                return False
-        return True
+        if path is not None or excluded_paths is not None:
+            return True
+
+        path = path.rstrip("/")
+        excluded_paths = [p.rstrip("/") for p in excluded_paths]
+        return path not in excluded_paths
 
 
     def authorization_header(self, request=None) -> str:
