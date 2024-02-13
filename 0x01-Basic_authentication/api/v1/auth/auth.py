@@ -7,16 +7,16 @@ from typing import List, TypeVar
 
 class Auth:
     """manage the API authentication"""
-    
+
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """Returns false if the path is in included paths"""
         if path is not None or excluded_paths is not None:
-            return True
+            if path[-1] != "/":
+                path = path + "/"
 
-        path = path.rstrip("/")
-        excluded_paths = [p.rstrip("/") for p in excluded_paths]
-        return path not in excluded_paths
-
+            if path in excluded_paths:
+                return False
+        return True
 
     def authorization_header(self, request=None) -> str:
         """validate all requests to secure the API"""
@@ -25,7 +25,6 @@ class Auth:
             if dic_key is not None:
                 return dic_key
         return None
-
 
     def current_user(self, request=None) -> TypeVar('User'):
         """current user method"""
