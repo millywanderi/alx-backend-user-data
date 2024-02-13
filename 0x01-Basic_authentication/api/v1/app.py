@@ -43,7 +43,7 @@ def forbidden_error(error) -> str:
 @app.before_request
 def setup():
     """app execution method"""
-    exclude_paths =['/api/v1/status/', '/api/v1/unauthorized/',
+    exclude_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
                      '/api/v1/forbidden/']
     if auth is not None:
         is_authenticated = auth.require_auth(request.path, exclude_paths)
