@@ -16,9 +16,9 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 auth = Auth()
 
-if getenv("AUTH_TYPE") == "basic_auth":
-    from api.v1.auth.basic_auth import BasicAuth
-    auth = BasicAuth()
+if getenv("AUTH_TYPE") == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
 
 
 @app.errorhandler(404)
@@ -49,7 +49,8 @@ def setup():
         is_authenticated = auth.require_auth(request.path, exclude_paths)
 
         if is_authenticated:
-            if auth.authorization_header(request) is None:
+            if auth.authorization_header(request) is None and \
+                    auth.session_cookie(request) is None:
                 abort(401)
 
             if auth.current_user(request) is None:
