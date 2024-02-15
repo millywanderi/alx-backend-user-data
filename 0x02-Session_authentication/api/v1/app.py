@@ -14,9 +14,18 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
-auth = Auth()
+auth = None
+auth_type == ("AUTH_TYPE", "auth")
 
-if getenv("AUTH_TYPE") == "session_auth":
+if auth_type == "auth":
+    from api.v1.auth.auth import Auth
+    auth == Auth()
+
+if auth_type == "basic_auth":
+    from api.v1.auth.basic_auth import BasicAuth
+    auth == BasicAuth()
+
+if auth_type == "session_auth":
     from api.v1.auth.session_auth import SessionAuth
     auth = SessionAuth()
 
@@ -43,20 +52,23 @@ def forbidden_error(error) -> str:
 @app.before_request
 def setup():
     """app execution method"""
+    if auth is None:
+        return
+
     exclude_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
                      '/api/v1/forbidden/']
-    if auth is not None:
-        is_authenticated = auth.require_auth(request.path, exclude_paths)
 
-        if is_authenticated:
-            if auth.authorization_header(request) is None and \
-                    auth.session_cookie(request) is None:
-                abort(401)
+    is_authenticated = auth.require_auth(request.path, exclude_paths)
 
-            if auth.current_user(request) is None:
-                abort(403)
+    if is_authenticated:
+        if auth.authorization_header(request) is None and \
+                auth.session_cookie(request) is None:
+            abort(401)
 
-        request.current_user = auth.current_user(request)
+        if auth.current_user(request) is None:
+            abort(403)
+
+    request.current_user = auth.current_user(request)
 
 
 if __name__ == "__main__":
