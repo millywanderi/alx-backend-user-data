@@ -26,10 +26,10 @@ class SessionAuth(Auth):
                 return user_id
             return None
 
-    def current_user(self, request=None) -> TypeVar('User'):
+    def current_user(self, request=None) -> User:
         """Method that returns a User instance based on a cookie value"""
         user_id = self.user_id_for_session_id(self.session_cookie(request))
-        return user.get(user_id)
+        return User.get(user_id)
 
     def destroy_session(self, request=None):
         """Method that destroys session's instances"""
