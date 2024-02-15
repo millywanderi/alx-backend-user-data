@@ -33,6 +33,11 @@ if auth_type == "session_exp_auth":
     from api.v1.auth.session_exp_auth import SessionExpAuth
     auth = SessionExpAuth()
 
+if auth_type == 'session_db_auth':
+    from api.v1.auth.session_db_auth import SessionDBAuth
+    auth = SessionDBAuth()
+
+
 @app.errorhandler(404)
 def not_found(error) -> str:
     """ Not found handler
@@ -59,7 +64,7 @@ def setup():
         return
 
     exclude_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
-                     '/api/v1/forbidden/']
+                     '/api/v1/forbidden/', '/api/v1/auth_session/login/']
 
     is_authenticated = auth.require_auth(request.path, exclude_paths)
 
