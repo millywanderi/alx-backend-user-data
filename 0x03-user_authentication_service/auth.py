@@ -48,3 +48,17 @@ class Auth:
         except NoResultFound:
             return False
         return False
+
+    def create_session(self, email: str) -> str:
+        """Get session ID"""
+        try:
+            # Find the user coresponding to the email
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            return None
+        if user is None:
+            return None
+        # Generate a new UUID and store it in as user's session_id
+        session_id = _generate_uuid()
+        self._db.update_user(user.id, session_id=session_id)
+        return session_id
